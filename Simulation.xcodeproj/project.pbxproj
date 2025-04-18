@@ -6,6 +6,15 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		82AF98DA2DAACAB0007B76D1 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 82AF98D92DAACAB0007B76D1 /* Foundation.framework */; };
+		82AF98DC2DAACAB7007B76D1 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 82AF98DB2DAACAB7007B76D1 /* AppKit.framework */; };
+		82AF98DE2DAACABC007B76D1 /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 82AF98DD2DAACABC007B76D1 /* Metal.framework */; };
+		82AF98E02DAACAC0007B76D1 /* MetalKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 82AF98DF2DAACAC0007B76D1 /* MetalKit.framework */; };
+		82AF98FB2DACD225007B76D1 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 82AF98FA2DACD225007B76D1 /* QuartzCore.framework */; };
+		82C86B522DACDD7500E3A308 /* libSDL2-2.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 82C86B512DACDD7500E3A308 /* libSDL2-2.0.0.dylib */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXCopyFilesBuildPhase section */
 		82AF98C42DAAC927007B76D1 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
@@ -20,12 +29,111 @@
 
 /* Begin PBXFileReference section */
 		82AF98C62DAAC927007B76D1 /* Simulation */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Simulation; sourceTree = BUILT_PRODUCTS_DIR; };
+		82AF98D92DAACAB0007B76D1 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		82AF98DB2DAACAB7007B76D1 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
+		82AF98DD2DAACABC007B76D1 /* Metal.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Metal.framework; path = System/Library/Frameworks/Metal.framework; sourceTree = SDKROOT; };
+		82AF98DF2DAACAC0007B76D1 /* MetalKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MetalKit.framework; path = System/Library/Frameworks/MetalKit.framework; sourceTree = SDKROOT; };
+		82AF98FA2DACD225007B76D1 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		82C86B512DACDD7500E3A308 /* libSDL2-2.0.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libSDL2-2.0.0.dylib"; path = "../../../../opt/homebrew/Cellar/sdl2/2.30.9/lib/libSDL2-2.0.0.dylib"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		82C86ADB2DACDC0000E3A308 /* Exceptions for "App" folder in "Simulation" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				App.cpp,
+				main.cpp,
+			);
+			target = 82AF98C52DAAC927007B76D1 /* Simulation */;
+		};
+		82C86B552DAD289D00E3A308 /* Exceptions for "Renderer" folder in "Simulation" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Camera.cpp,
+				Primitives/Cube.cpp,
+				Primitives/Triangle.cpp,
+				Renderer.cpp,
+				Shaders/Shaders.metal,
+			);
+			target = 82AF98C52DAAC927007B76D1 /* Simulation */;
+		};
+		82C86B6C2DAD643500E3A308 /* Exceptions for "Utility" folder in "Simulation" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Keyboard.cpp,
+				MathUtilities.cpp,
+				Mouse.cpp,
+			);
+			target = 82AF98C52DAAC927007B76D1 /* Simulation */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
+		82C86B562DAD289D00E3A308 /* Exceptions for "Renderer" folder in "Compile Sources" phase from "Simulation" target */ = {
+			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
+			buildPhase = 82AF98C22DAAC927007B76D1 /* Sources */;
+			membershipExceptions = (
+				Camera.h,
+				Primitives/Cube.h,
+				Primitives/Triangle.h,
+				Renderer.h,
+			);
+		};
+		82C86B582DAD28C400E3A308 /* Exceptions for "App" folder in "Compile Sources" phase from "Simulation" target */ = {
+			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
+			buildPhase = 82AF98C22DAAC927007B76D1 /* Sources */;
+			membershipExceptions = (
+				App.h,
+				MetalConfig.h,
+			);
+		};
+		82C86B6D2DAD643500E3A308 /* Exceptions for "Utility" folder in "Compile Sources" phase from "Simulation" target */ = {
+			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
+			buildPhase = 82AF98C22DAAC927007B76D1 /* Sources */;
+			membershipExceptions = (
+				Keyboard.h,
+				MathUtilities.h,
+				Mouse.h,
+			);
+		};
+/* End PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		82AF98C82DAAC927007B76D1 /* Simulation */ = {
+		82AF98D02DAAC94F007B76D1 /* App */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = Simulation;
+			exceptions = (
+				82C86ADB2DACDC0000E3A308 /* Exceptions for "App" folder in "Simulation" target */,
+				82C86B582DAD28C400E3A308 /* Exceptions for "App" folder in "Compile Sources" phase from "Simulation" target */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		82AF98D22DAAC95F007B76D1 /* Renderer */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				82C86B552DAD289D00E3A308 /* Exceptions for "Renderer" folder in "Simulation" target */,
+				82C86B562DAD289D00E3A308 /* Exceptions for "Renderer" folder in "Compile Sources" phase from "Simulation" target */,
+			);
+			path = Renderer;
+			sourceTree = "<group>";
+		};
+		82AF98D42DAAC98F007B76D1 /* Simulations */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Simulations;
+			sourceTree = "<group>";
+		};
+		82C86AD82DACDAC900E3A308 /* metal-cpp */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "metal-cpp";
+			sourceTree = "<group>";
+		};
+		82C86B672DAD5F0000E3A308 /* Utility */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				82C86B6C2DAD643500E3A308 /* Exceptions for "Utility" folder in "Simulation" target */,
+				82C86B6D2DAD643500E3A308 /* Exceptions for "Utility" folder in "Compile Sources" phase from "Simulation" target */,
+			);
+			path = Utility;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -35,6 +143,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				82C86B522DACDD7500E3A308 /* libSDL2-2.0.0.dylib in Frameworks */,
+				82AF98FB2DACD225007B76D1 /* QuartzCore.framework in Frameworks */,
+				82AF98DA2DAACAB0007B76D1 /* Foundation.framework in Frameworks */,
+				82AF98E02DAACAC0007B76D1 /* MetalKit.framework in Frameworks */,
+				82AF98DE2DAACABC007B76D1 /* Metal.framework in Frameworks */,
+				82AF98DC2DAACAB7007B76D1 /* AppKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -44,7 +158,12 @@
 		82AF98BD2DAAC927007B76D1 = {
 			isa = PBXGroup;
 			children = (
-				82AF98C82DAAC927007B76D1 /* Simulation */,
+				82AF98D02DAAC94F007B76D1 /* App */,
+				82AF98D22DAAC95F007B76D1 /* Renderer */,
+				82AF98D42DAAC98F007B76D1 /* Simulations */,
+				82C86B672DAD5F0000E3A308 /* Utility */,
+				82C86AD82DACDAC900E3A308 /* metal-cpp */,
+				82AF98D82DAACAB0007B76D1 /* Frameworks */,
 				82AF98C72DAAC927007B76D1 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -55,6 +174,19 @@
 				82AF98C62DAAC927007B76D1 /* Simulation */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		82AF98D82DAACAB0007B76D1 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				82C86B512DACDD7500E3A308 /* libSDL2-2.0.0.dylib */,
+				82AF98FA2DACD225007B76D1 /* QuartzCore.framework */,
+				82AF98DF2DAACAC0007B76D1 /* MetalKit.framework */,
+				82AF98DD2DAACABC007B76D1 /* Metal.framework */,
+				82AF98DB2DAACAB7007B76D1 /* AppKit.framework */,
+				82AF98D92DAACAB0007B76D1 /* Foundation.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -71,9 +203,6 @@
 			buildRules = (
 			);
 			dependencies = (
-			);
-			fileSystemSynchronizedGroups = (
-				82AF98C82DAAC927007B76D1 /* Simulation */,
 			);
 			name = Simulation;
 			packageProductDependencies = (
@@ -245,6 +374,17 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
+				HEADER_SEARCH_PATHS = (
+					/opt/homebrew/Cellar/sdl2/2.30.9/include/SDL2,
+					"${PROJECT_DIR}/metal-cpp",
+					"${PROJECT_DIR}/Renderer",
+					"${PROJECT_DIR}/Utility",
+					"${PROJECT_DIR}/App",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/opt/homebrew/Cellar/sdl2/2.30.9/lib,
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -253,6 +393,17 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
+				HEADER_SEARCH_PATHS = (
+					/opt/homebrew/Cellar/sdl2/2.30.9/include/SDL2,
+					"${PROJECT_DIR}/metal-cpp",
+					"${PROJECT_DIR}/Renderer",
+					"${PROJECT_DIR}/Utility",
+					"${PROJECT_DIR}/App",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/opt/homebrew/Cellar/sdl2/2.30.9/lib,
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
