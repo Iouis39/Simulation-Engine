@@ -1,0 +1,7 @@
+build/
+Assets/
+Utility/
+ImGui/
+metal-cpp/
+CMakeLists.txt
+Info.plist
