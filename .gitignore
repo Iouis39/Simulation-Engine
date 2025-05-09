@@ -5,4 +5,7 @@ ImGui/
 metal-cpp/
 CMakeLists.txt
 Info.plist
-.cache/clangd/index/
+.cache/
+Simulation-Engine/Renderer
+/.null-ls_598893_Camera.h
+
