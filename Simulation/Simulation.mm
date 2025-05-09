@@ -12,9 +12,11 @@ void Simulation::setup() {
   }
 }
 
-void Simulation::update(float dt) {
+void Simulation::update() {
+  if(m_simulationSettings->paused) return;
   for(auto& obj : m_simulationObjects) {
-    obj.update(dt);
+    simd::float3 g = m_simulationSettings->gravityEnabled ? m_simulationSettings->gravity : simd::float3(0.0f);
+    obj.update(m_simulationSettings->dt, g);
   }
 }
 

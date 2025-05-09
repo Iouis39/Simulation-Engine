@@ -8,7 +8,7 @@ struct SimulationSettings {
   float dt = 1.0f / 60.f;
   simd::float3 gravity = { 0.0f, -9.81f, 0.0f };
   bool gravityEnabled = true;
-  bool paused = false;
+  bool paused = true;
 };
 
 class Simulation {
@@ -16,7 +16,7 @@ class Simulation {
   explicit Simulation(std::vector<std::shared_ptr<Mesh>> meshList, SimulationSettings* simulationSettings);
 
   void setup();
-  void update(float dt);
+  void update();
 
   std::vector<simd::float3> getPositionList(size_t index) const;
 

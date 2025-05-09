@@ -3,13 +3,11 @@
 #include "../Utility/Mesh.h"
 #include <vector>
 
-const simd::float3 gravity = simd::make_float3(0.0f, -1.8f, 0.0f);
-
 struct SimulationObject {
   std::vector<PointMass> pointMasses;
   std::vector<simd::float3> positionList;
 
-  void update(float dt) {
+  void update(float dt, simd::float3 gravity) {
     for(auto& p : pointMasses) {
       p.integrate(dt, gravity);
       p.resolveGroundCollision();

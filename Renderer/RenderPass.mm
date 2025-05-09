@@ -105,9 +105,16 @@ void MainPass::buildImGui() {
     ImGui::StyleColorsClassic();
     ImGuiIO& io = ImGui::GetIO();
     ImGui::SetWindowPos(ImVec2(0.0f, 0.0f));
-    ImGui::SetWindowSize(ImVec2(io.DisplaySize.x / 3, io.DisplaySize.y / 2.5));
+    ImVec2 windowDimension = ImVec2(io.DisplaySize.x * 0.3, io.DisplaySize.y * 0.4);
+    ImGui::SetWindowSize(windowDimension);
 
-    ImGui::Checkbox("Activate wireframe mode", &useWriteFrameMode);
+    ImGui::Checkbox("Wireframe", &useWriteFrameMode);
+    ImGui::Checkbox("Pause", &m_simulationSettings->paused);
+    ImGui::Checkbox("Gravity", &m_simulationSettings->gravityEnabled);
+
+    ImGui::SetNextItemWidth(windowDimension.x * 0.4);
+    ImGui::SliderFloat("Timestep", &m_simulationSettings->dt, 0.001f, 0.01f);
+
      
     ImGui::End();
 }

@@ -123,7 +123,7 @@ void App::run() {
         float deltaTime = (now - last) / 1000.0f; // in seconds
         last = now;
         
-        simulation->update(1.0f / 60.f);
+        simulation->update();
         renderer->updatePositionsBuffer(simulation.get());
         processEvents();
         update(deltaTime);
