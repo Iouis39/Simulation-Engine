@@ -5,3 +5,4 @@ ImGui/
 metal-cpp/
 CMakeLists.txt
 Info.plist
+.cache/clangd/index/
