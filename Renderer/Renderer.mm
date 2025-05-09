@@ -7,16 +7,18 @@
 
 Renderer::Renderer(NS::SharedPtr<CA::MetalLayer> layer, NS::SharedPtr<MTL::Device> device, 
                    NS::SharedPtr<MTL::CommandQueue> commandQueue, Uniforms& uniforms,
-                   MTL::CaptureManager* captureManager, std::vector<std::shared_ptr<Mesh>> meshList)
+                   MTL::CaptureManager* captureManager, std::vector<std::shared_ptr<Mesh>> meshList, 
+                   SimulationSettings* simulationSettings)
 : layer(layer), device(device), commandQueue(commandQueue), m_cameraUniforms(uniforms), 
-  m_captureManager(captureManager), m_meshList(meshList) {
+  m_captureManager(captureManager), m_meshList(meshList), m_simulationSettings(simulationSettings) {
 
     buildShadowMap();
     buildPositionsBuffer();
 
     m_renderPasses.push_back(std::make_unique<ShadowPass>(device, m_lightUniforms, m_shadowMap, m_modelTransform));
-    m_renderPasses.push_back(std::make_unique<MainPass>(device, m_cameraUniforms, m_lightUniforms,
-                                                        m_shadowMap, m_shadowSampler, m_modelTransform, m_dynamicPositions));
+    m_renderPasses.push_back(std::make_unique<MainPass>(device, m_cameraUniforms, m_lightUniforms, m_shadowMap,
+                                                        m_shadowSampler, m_modelTransform, m_dynamicPositions, 
+                                                        m_simulationSettings));
 }
 
 

@@ -12,10 +12,14 @@ class App {
 
     void run();
 
- private:
     void init();
     void buildMeshes();
 
+    void processEvents();
+    void update(float deltaTime);
+    void ImGuiSetup();
+
+ private:
     SDL_Window* m_window;
     SDL_Renderer* m_sdlRenderer;
     bool isRunning = true;
@@ -30,12 +34,10 @@ class App {
     std::unique_ptr<Camera> camera;
     std::unique_ptr<Keyboard> keyboard;
     std::unique_ptr<Mouse> mouse;
-
     std::unique_ptr<Simulation> simulation;
 
     std::vector<std::shared_ptr<Mesh>> m_meshList;
 
-    void processEvents();
-    void update(float deltaTime);
-    void ImGuiSetup();
+    SimulationSettings m_simulationSettings;
 };
+

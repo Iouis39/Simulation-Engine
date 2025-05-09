@@ -3,6 +3,7 @@
 #include "Camera.h"
 #include "../Utility/Primitives.h"
 #include "../Utility/Mesh.h"
+#include "../Simulation/Simulation.h"
 #include <vector>
 
 class RenderPass {
@@ -18,7 +19,8 @@ class MainPass : public RenderPass {
 public:
   MainPass(NS::SharedPtr<MTL::Device> device, Uniforms& cameraUniforms, LightUniforms& lightUniforms,
            NS::SharedPtr<MTL::Texture> shadowMap,  NS::SharedPtr<MTL::SamplerState> shadowSampler,
-           simd::float4x4& modelTransform, std::vector<NS::SharedPtr<MTL::Buffer>> dynamicPositions);
+           simd::float4x4& modelTransform, std::vector<NS::SharedPtr<MTL::Buffer>> dynamicPositions,
+           SimulationSettings* simulationSettings);
   void encode(MTL::CommandBuffer* commandBuffer, MTL::Texture* drawableTexture, std::vector<std::shared_ptr<Mesh>> meshList);
 
   MTL::RenderPipelineState* buildPipeline(const char* vertName, const char* fragName);
@@ -44,6 +46,9 @@ private:
 
   Quad Quad;
   Cube Cube;
+
+  bool useWriteFrameMode = false;
+  SimulationSettings* m_simulationSettings;
 };
 
 class ShadowPass : public RenderPass {

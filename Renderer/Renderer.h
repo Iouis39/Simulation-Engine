@@ -13,7 +13,8 @@ class Renderer {
 public:
     Renderer(NS::SharedPtr<CA::MetalLayer> layer, NS::SharedPtr<MTL::Device> device, 
              NS::SharedPtr<MTL::CommandQueue> commandQueue, Uniforms& uniforms,
-             MTL::CaptureManager* cpatureManager, std::vector<std::shared_ptr<Mesh>> meshList);
+             MTL::CaptureManager* cpatureManager, std::vector<std::shared_ptr<Mesh>> meshList, 
+             SimulationSettings* simulationSettings);
     ~Renderer();
     void draw();
 
@@ -43,5 +44,7 @@ private:
 
     std::vector<std::unique_ptr<RenderPass>> m_renderPasses;
     std::vector<std::shared_ptr<Mesh>> m_meshList;
+
+    SimulationSettings* m_simulationSettings;
 };
 

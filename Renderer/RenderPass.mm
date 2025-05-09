@@ -1,12 +1,5 @@
 #include "RenderPass.h"
-#include "Foundation/NSString.hpp"
-#include "Foundation/NSTypes.hpp"
-#include "Metal/MTLPixelFormat.hpp"
 #include "Metal/MTLRenderCommandEncoder.hpp"
-#include "Metal/MTLRenderPass.hpp"
-#include "Metal/MTLResource.hpp"
-#include "Metal/MTLTexture.hpp"
-#include "imgui_internal.h"
 
 #define IMGUI_IMPL_METAL_CPP
 #include "../ImGui/imgui.h"
@@ -24,11 +17,12 @@
 
 MainPass::MainPass(NS::SharedPtr<MTL::Device> device, Uniforms& cameraUniforms, LightUniforms& lightUniforms,
                    NS::SharedPtr<MTL::Texture> shadowMap, NS::SharedPtr<MTL::SamplerState> shadowSampler,
-                   simd::float4x4& modelTransform, std::vector<NS::SharedPtr<MTL::Buffer>> dynamicPositions)
+                   simd::float4x4& modelTransform, std::vector<NS::SharedPtr<MTL::Buffer>> dynamicPositions, 
+                   SimulationSettings* simulationSettings)
                    : m_device(device), m_cameraUniforms(cameraUniforms), 
                      m_lightUniforms(lightUniforms), m_shadowMap(shadowMap), 
                      m_shadowSampler(shadowSampler), m_modelTransform(modelTransform),
-                     m_dynamicPositions(dynamicPositions) {
+                     m_dynamicPositions(dynamicPositions), m_simulationSettings(simulationSettings) {
     
     Quad = buildQuad(m_device.get(), simd::make_half3(0.212, 0.271, 0.31));
     Cube = buildCube(m_device.get(), simd::make_half3(0.12, 0.1, 0.6));
@@ -83,8 +77,7 @@ MTL::RenderPipelineState* MainPass::buildPipeline(const char *vertName, const ch
     layoutDescriptor->setStepFunction(MTL::VertexStepFunctionPerVertex);
     layoutDescriptor->setStride(sizeof(Vertex3));
     
-    pipelineDescriptor->setDepthAttachmentPixelFormat(MTL::PixelFormat::PixelFormatDepth32Float);//!!
-    //pipelineDescriptor->setStencilAttachmentPixelFormat(MTL::PixelFormat::PixelFormatDepth32Float_Stencil8);
+    pipelineDescriptor->setDepthAttachmentPixelFormat(MTL::PixelFormat::PixelFormatDepth32Float);
     pipelineDescriptor->setVertexDescriptor(vertexDescriptor);
 
     MTL::RenderPipelineState* pipeline = m_device->newRenderPipelineState(pipelineDescriptor, &error);
@@ -105,58 +98,17 @@ void MainPass::buildDepthStencilState() {
    
     m_depthStencilState = NS::TransferPtr(m_device->newDepthStencilState(depthStencilDescriptor));
     depthStencilDescriptor->release();
-    
-    /*
-    MTL::TextureDescriptor* depthTextureDescriptor = MTL::TextureDescriptor::alloc()->init();
-    depthTextureDescriptor->setPixelFormat(MTL::PixelFormatDepth32Float_Stencil8);
-    depthTextureDescriptor->setWidth(NS::UInteger(WINDOW_WIDTH));
-    depthTextureDescriptor->setHeight(NS::UInteger(WINDOW_HEIGHT));
-    depthTextureDescriptor->setUsage(MTL::TextureUsageRenderTarget);
-    depthTextureDescriptor->setStorageMode(MTL::StorageModePrivate);
-    
-    m_depthTexture = m_device->newTexture(depthTextureDescriptor);
-    m_depthTexture->setLabel(NS::String::string("Depth Texture", NS::UTF8StringEncoding));
-    depthTextureDescriptor->release();*/
 }
 
 void MainPass::buildImGui() {
-    ImGui::Begin("Inspector");
+    ImGui::Begin("Simulation Parameters");
     ImGui::StyleColorsClassic();
     ImGuiIO& io = ImGui::GetIO();
     ImGui::SetWindowPos(ImVec2(0.0f, 0.0f));
     ImGui::SetWindowSize(ImVec2(io.DisplaySize.x / 3, io.DisplaySize.y / 2.5));
 
-    static float dx = 0.0f; 
-    static float dy = 0.0f; 
-    static float dz = 0.0f;
-    ImGui::InputFloat("x position", &dx);
-    ImGui::InputFloat("y position", &dy);
-    ImGui::InputFloat("z position", &dz);
-
-    simd::float4x4 translation = matrix4x4_translation(simd::make_float3(dx, dy, dz));
-
-    static float sx = 1.0f;
-    static float sy = 1.0f;
-    static float sz = 1.0f;
-    ImGui::SliderFloat("x scaling", &sx, 0.0f, 5.0f);
-    ImGui::SliderFloat("y scaling", &sy, 0.0f, 5.0f);
-    ImGui::SliderFloat("z scaling", &sz, 0.0f, 5.0f);
-
-    simd::float4x4 scaling = matrix4x4_scale(simd::make_float3(sx, sy, sz));
-
-    static float angle = 0.0f;
-    static float ax = 0.0f; 
-    static float ay = 1.0f; 
-    static float az = 0.0f;
-    ImGui::SliderFloat("rotation angle", &angle, -360.0f, 360.f);
-    ImGui::InputFloat("x axis", &ax);
-    ImGui::InputFloat("y axis", &ay);
-    ImGui::InputFloat("z axis", &az);
-
-    simd::float4x4 rotation = matrix4x4_rotation(radians_from_degrees(angle), simd::make_float3(ax, ay, az));
-
-    // first scale, then rotate and then translate
-    m_modelTransform = translation * rotation * scaling; 
+    ImGui::Checkbox("Activate wireframe mode", &useWriteFrameMode);
+     
     ImGui::End();
 }
 
@@ -208,15 +160,18 @@ void MainPass::encode(MTL::CommandBuffer *commandBuffer, MTL::Texture* drawableT
     // loop over meshes
     for(auto m : meshList) {
       encoder->setFragmentBytes(&m->color, sizeof(simd::half3), NS::UInteger(2));
-    
       encoder->setVertexBuffer(m->getVertexBuffer(), m->getVertexBufferOffset(), NS::UInteger(0));
       encoder->setVertexBytes(&m->modelMatrix, sizeof(simd::float4x4), NS::UInteger(2));
       encoder->setVertexBuffer(m_dynamicPositions.at(i).get(), NS::UInteger(0), NS::UInteger(3));
      
+      
+      if(useWriteFrameMode) encoder->setTriangleFillMode(MTL::TriangleFillModeLines); 
       encoder->drawIndexedPrimitives(MTL::PrimitiveTypeTriangle, m->getIndexCount(), m->getIndexType(), m->getIndexBuffer(), 
                                      m->getIndexBufferOffset(), NS::UInteger(1));   
       i++;
     }
+
+    encoder->setTriangleFillMode(MTL::TriangleFillModeFill);
 
     // begin ImGui Frame 
     ImGui_ImplMetal_NewFrame((__bridge MTLRenderPassDescriptor*)m_pass);

@@ -1,6 +1,7 @@
 #include "Simulation.h"
 
-Simulation::Simulation(std::vector<std::shared_ptr<Mesh>> meshList) : m_meshList(meshList) {}
+Simulation::Simulation(std::vector<std::shared_ptr<Mesh>> meshList, SimulationSettings* simulationSettings) 
+: m_meshList(meshList), m_simulationSettings(simulationSettings)  {}
 
 
 void Simulation::setup() {

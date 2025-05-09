@@ -24,9 +24,10 @@ App::App() {
     float aspect = WINDOW_WIDTH / WINDOW_HEIGHT;
 
     camera = std::make_unique<Camera>(pos, dir, up, M_PI / 2, aspect, 0.1, 100);
-    renderer = std::make_unique<Renderer>(m_layer, m_device, m_commandQueue, camera->uniforms(), m_captureManager, m_meshList);
+    renderer = std::make_unique<Renderer>(m_layer, m_device, m_commandQueue, camera->uniforms(), m_captureManager, m_meshList,
+                                          &m_simulationSettings);
 
-    simulation = std::make_unique<Simulation>(m_meshList);
+    simulation = std::make_unique<Simulation>(m_meshList, &m_simulationSettings);
     simulation->setup();
    
     keyboard = std::make_unique<Keyboard>();
