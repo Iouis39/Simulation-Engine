@@ -23,11 +23,19 @@ struct LightUniforms {
 };
 
 VertexOutput vertex vertexShadowShader(VertexInput input  [[stage_in]],
-                        constant LightUniforms& uniforms  [[buffer(1)]],
+                                            uint vertexID [[vertex_id]],
+                         constant LightUniforms& uniforms [[buffer(1)]],
                         constant float4x4& modelTransform [[buffer(2)]],
-                                 uint instanceID          [[instance_id]]) {
+                    const device float3* dynamicPositions [[buffer(3)]],
+                       constant bool& useDynamicPositions [[buffer(4)]],
+                             const device int* remapTable [[buffer(5)]]) {
     VertexOutput output;
-    output.position = uniforms.viewProjection * modelTransform * float4(input.position, 1.0f);
+    if(!useDynamicPositions) { 
+      output.position = uniforms.viewProjection * modelTransform * float4(input.position, 1.0f);
+    } else {
+    // model transform already on CPU-Side
+      output.position = uniforms.viewProjection * float4(dynamicPositions[remapTable[vertexID]], 1.0f);
+    }
     
     return output;
 }

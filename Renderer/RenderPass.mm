@@ -201,8 +201,10 @@ void MainPass::encode(MTL::CommandBuffer *commandBuffer, MTL::Texture* drawableT
 //--------------------------------------------------//
 
 ShadowPass::ShadowPass(NS::SharedPtr<MTL::Device> device, LightUniforms& lightUniforms,
-                       NS::SharedPtr<MTL::Texture> shadowMap, simd::float4x4& modelTransform)
-: m_device(device), m_lightUniforms(lightUniforms), m_shadowMap(shadowMap), m_modelTransform(modelTransform) {
+                       NS::SharedPtr<MTL::Texture> shadowMap, simd::float4x4& modelTransform, 
+                       std::vector<NS::SharedPtr<MTL::Buffer>> dynamicPositions, std::vector<NS::SharedPtr<MTL::Buffer>> remapTables)
+: m_device(device), m_lightUniforms(lightUniforms), m_shadowMap(shadowMap), m_modelTransform(modelTransform), 
+  m_dynamicPositions(dynamicPositions), m_remapTables(remapTables) {
     Quad = buildQuad(m_device.get(), simd::make_half3(0.212, 0.271, 0.31));
     Cube = buildCube(m_device.get(), simd::make_half3(0.12, 0.1, 0.6));
     m_shadowPipelineState = NS::TransferPtr(buildPipeline("vertexShadowShader", "fragmentShadowShader"));
@@ -299,12 +301,22 @@ void ShadowPass::encode(MTL::CommandBuffer *commandBuffer, MTL::Texture *texture
     encoder->drawIndexedPrimitives(MTL::PrimitiveTypeTriangle, NS::UInteger(6), 
                  MTL::IndexTypeUInt16, Quad.indexBuffer.get(), NS::UInteger(0), NS::UInteger(1));
 
+    // activate dynamic positions
+    useDynamicPositions = true;
+    encoder->setVertexBytes(&useDynamicPositions, sizeof(bool), NS::UInteger(4));
+
+    size_t i = 0;
     // loop over meshes
     for(auto m : meshList) {
-      encoder->setVertexBytes(&m->modelMatrix, sizeof(simd::float4x4), NS::UInteger(2));
+      encoder->setFragmentBytes(&m->color, sizeof(simd::half3), NS::UInteger(2));
       encoder->setVertexBuffer(m->getVertexBuffer(), m->getVertexBufferOffset(), NS::UInteger(0));
+      encoder->setVertexBytes(&m->modelMatrix, sizeof(simd::float4x4), NS::UInteger(2));
+      encoder->setVertexBuffer(m_dynamicPositions.at(i).get(), NS::UInteger(0), NS::UInteger(3));
+      encoder->setVertexBuffer(m_remapTables.at(i).get(), NS::UInteger(0), NS::UInteger(5));
+     
       encoder->drawIndexedPrimitives(MTL::PrimitiveTypeTriangle, m->getIndexCount(), m->getIndexType(), m->getIndexBuffer(), 
                                      m->getIndexBufferOffset(), NS::UInteger(1));   
+      i++;
     }
 
     encoder->endEncoding();

@@ -44,7 +44,8 @@ VertexOutput vertex vertexShader(VertexInput input                [[stage_in]],
     if(!useDynamicPositions) {
       output.position = cameraUniforms.viewProjection * modelMatrix * float4(input.position, 1.0f);
     } else {
-     output.position = cameraUniforms.viewProjection * modelMatrix * float4(dynamicPositions[remapTable[vertexID]], 1.0f); 
+    // model matrix was already applied on CPU-Side, when obj vertices where extracted
+     output.position = cameraUniforms.viewProjection * float4(dynamicPositions[remapTable[vertexID]], 1.0f); 
     }
     output.worldPosition = modelMatrix * float4(input.position, 1.0);
     output.normal = input.normal;

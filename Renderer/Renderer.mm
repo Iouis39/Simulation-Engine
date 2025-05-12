@@ -17,7 +17,8 @@ Renderer::Renderer(NS::SharedPtr<CA::MetalLayer> layer, NS::SharedPtr<MTL::Devic
     buildShadowMap();
     buildPositionsBuffer();
 
-    m_renderPasses.push_back(std::make_unique<ShadowPass>(device, m_lightUniforms, m_shadowMap, m_modelTransform));
+    m_renderPasses.push_back(std::make_unique<ShadowPass>(device, m_lightUniforms, m_shadowMap, m_modelTransform, 
+                                                          m_dynamicPositions, m_remapTables));
     m_renderPasses.push_back(std::make_unique<MainPass>(device, m_cameraUniforms, m_lightUniforms, m_shadowMap,
                                                         m_shadowSampler, m_modelTransform, m_dynamicPositions, 
                                                         m_remapTables, m_simulationSettings));
@@ -47,6 +48,7 @@ void Renderer::updatePositionsBuffer() {
     memcpy(m_remapTables.at(i)->contents(), remapTable.data(),  remapTable.size() * sizeof(int));
 
     auto updatedPositions = m_simulation->getPositionList(i);
+    std::cout << updatedPositions.at(i).x << std::endl;
     memcpy(m_dynamicPositions.at(i)->contents(), updatedPositions.data(),  updatedPositions.size() * sizeof(simd::float3));
   }
 }

@@ -10,6 +10,7 @@ void Simulation::setup() {
     for(size_t i = 0; i < m_meshList.size(); i++) {
       SimulationObject obj;
       // convert mesh to point masses
+      obj.modelMatrix = m_meshList.at(i)->modelMatrix;
       obj.generatePointMasses(m_meshList.at(i));
       m_simulationObjects.push_back(std::move(obj));
       // count point masses

@@ -26,6 +26,7 @@ struct SimulationObject {
   std::vector<simd::float3> positionList;
   size_t vertexCount;
   std::vector<int> remapTable;
+  simd::float4x4 modelMatrix;
 
   void update(float dt, simd::float3 gravity) {
     for(auto& p : pointMasses) {
@@ -52,19 +53,14 @@ struct SimulationObject {
             reinterpret_cast<uint8_t*>(vertexPointer) + i * stride + positionOffset
         );
 
-
-      simd::float3 posObj = simd::make_float3(positionPtr[0], positionPtr[1], positionPtr[2]);
-
+      // transform model positions to world space
+      simd::float3 posObj = (modelMatrix * simd::make_float4(positionPtr[0], positionPtr[1], positionPtr[2], 1.0f)).xyz;
 
       if(uniquePositions.find(posObj) == uniquePositions.end()) {
           int newIndex = static_cast<int>(pointMasses.size());
-          pointMasses.emplace_back(simd::make_float3(positionPtr[0], positionPtr[1], positionPtr[2]), 
-                                                        simd::float3(0.f), 1.0f);
+          pointMasses.emplace_back(posObj, simd::float3(0.f), 1.0f);
           uniquePositions[posObj] = newIndex;
       }
-
-      //pointMasses.emplace_back(simd::make_float3(positionPtr[0], positionPtr[1], positionPtr[2]), 
-      //                                                 simd::float3(0.f), 1.0f);
       remapTable.push_back(uniquePositions[posObj]);
     }
   }

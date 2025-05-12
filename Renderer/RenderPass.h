@@ -55,7 +55,8 @@ private:
 class ShadowPass : public RenderPass {
 public:
   ShadowPass(NS::SharedPtr<MTL::Device> device, LightUniforms &lightUniforms,
-             NS::SharedPtr<MTL::Texture> shadowMap, simd::float4x4& modelTransform);
+             NS::SharedPtr<MTL::Texture> shadowMap, simd::float4x4& modelTransform,
+             std::vector<NS::SharedPtr<MTL::Buffer>> dynamicPositions, std::vector<NS::SharedPtr<MTL::Buffer>> remapTables);
   void encode(MTL::CommandBuffer* commandBuffer, MTL::Texture* drawableTexture, std::vector<std::shared_ptr<Mesh>> meshList);
 
   MTL::RenderPipelineState* buildPipeline(const char* vertName, const char* fragName);
@@ -66,10 +67,15 @@ private:
   NS::SharedPtr<MTL::RenderPipelineState> m_shadowPipelineState;
   NS::SharedPtr<MTL::DepthStencilState> m_depthStencilState;
 
+  std::vector<NS::SharedPtr<MTL::Buffer>> m_dynamicPositions;
+  std::vector<NS::SharedPtr<MTL::Buffer>> m_remapTables;
+
   LightUniforms& m_lightUniforms;
   simd::float4x4& m_modelTransform;
   NS::SharedPtr<MTL::Texture> m_shadowMap;
 
   Quad Quad;
   Cube Cube;
+
+  bool useDynamicPositions = false;
 };
