@@ -14,7 +14,7 @@ public:
     Renderer(NS::SharedPtr<CA::MetalLayer> layer, NS::SharedPtr<MTL::Device> device, 
              NS::SharedPtr<MTL::CommandQueue> commandQueue, Uniforms& uniforms,
              MTL::CaptureManager* cpatureManager, std::vector<std::shared_ptr<Mesh>> meshList, 
-             SimulationSettings* simulationSettings);
+             SimulationSettings* simulationSettings, Simulation* simulation);
     ~Renderer();
     void draw();
 
@@ -24,7 +24,7 @@ public:
    
     void buildShadowMap();
     void buildPositionsBuffer();
-    void updatePositionsBuffer(const Simulation* sim);
+    void updatePositionsBuffer();
     
 private:
     NS::SharedPtr<MTL::Device> device;
@@ -32,12 +32,15 @@ private:
     NS::SharedPtr<CA::MetalLayer> layer;
 
     MTL::CaptureManager* m_captureManager;
+
+    Simulation* m_simulation;
     
     Uniforms& m_cameraUniforms;
     LightUniforms m_lightUniforms;
     simd::float4x4 m_modelTransform = matrix4x4_identity();
 
     std::vector<NS::SharedPtr<MTL::Buffer>> m_dynamicPositions;
+    std::vector<NS::SharedPtr<MTL::Buffer>> m_remapTables;
     
     NS::SharedPtr<MTL::Texture> m_shadowMap;
     NS::SharedPtr<MTL::SamplerState> m_shadowSampler;

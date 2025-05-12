@@ -18,11 +18,12 @@
 MainPass::MainPass(NS::SharedPtr<MTL::Device> device, Uniforms& cameraUniforms, LightUniforms& lightUniforms,
                    NS::SharedPtr<MTL::Texture> shadowMap, NS::SharedPtr<MTL::SamplerState> shadowSampler,
                    simd::float4x4& modelTransform, std::vector<NS::SharedPtr<MTL::Buffer>> dynamicPositions, 
-                   SimulationSettings* simulationSettings)
+                   std::vector<NS::SharedPtr<MTL::Buffer>> remapTables, SimulationSettings* simulationSettings)
                    : m_device(device), m_cameraUniforms(cameraUniforms), 
                      m_lightUniforms(lightUniforms), m_shadowMap(shadowMap), 
                      m_shadowSampler(shadowSampler), m_modelTransform(modelTransform),
-                     m_dynamicPositions(dynamicPositions), m_simulationSettings(simulationSettings) {
+                     m_dynamicPositions(dynamicPositions), m_remapTables(remapTables),
+                     m_simulationSettings(simulationSettings) {
     
     Quad = buildQuad(m_device.get(), simd::make_half3(0.212, 0.271, 0.31));
     Cube = buildCube(m_device.get(), simd::make_half3(0.12, 0.1, 0.6));
@@ -108,6 +109,8 @@ void MainPass::buildImGui() {
     ImVec2 windowDimension = ImVec2(io.DisplaySize.x * 0.3, io.DisplaySize.y * 0.4);
     ImGui::SetWindowSize(windowDimension);
 
+    ImGui::Text("Point Masses: %d", m_simulationSettings->pointMassCount);
+
     ImGui::Checkbox("Wireframe", &useWriteFrameMode);
     ImGui::Checkbox("Pause", &m_simulationSettings->paused);
     ImGui::Checkbox("Gravity", &m_simulationSettings->gravityEnabled);
@@ -127,9 +130,6 @@ void MainPass::encode(MTL::CommandBuffer *commandBuffer, MTL::Texture* drawableT
     m_pass->colorAttachments()->object(0)->setStoreAction(MTL::StoreActionStore);
     
     MTL::RenderPassDepthAttachmentDescriptor* depthAttachment = m_pass->depthAttachment();
-    /*depthAttachment->setTexture(m_depthTexture);
-    depthAttachment->setLoadAction(MTL::LoadActionClear);
-    depthAttachment->setStoreAction(MTL::StoreActionStore);*/
     depthAttachment->setClearDepth(1.0f);
 
     bool useDynamicPositions = false;
@@ -170,6 +170,7 @@ void MainPass::encode(MTL::CommandBuffer *commandBuffer, MTL::Texture* drawableT
       encoder->setVertexBuffer(m->getVertexBuffer(), m->getVertexBufferOffset(), NS::UInteger(0));
       encoder->setVertexBytes(&m->modelMatrix, sizeof(simd::float4x4), NS::UInteger(2));
       encoder->setVertexBuffer(m_dynamicPositions.at(i).get(), NS::UInteger(0), NS::UInteger(3));
+      encoder->setVertexBuffer(m_remapTables.at(i).get(), NS::UInteger(0), NS::UInteger(5));
      
       
       if(useWriteFrameMode) encoder->setTriangleFillMode(MTL::TriangleFillModeLines); 

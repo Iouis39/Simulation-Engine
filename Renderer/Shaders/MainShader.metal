@@ -38,12 +38,13 @@ VertexOutput vertex vertexShader(VertexInput input                [[stage_in]],
                         constant float4x4 &modelMatrix            [[buffer(2)]],
                         const device float3* dynamicPositions     [[buffer(3)]],
                         constant bool& useDynamicPositions        [[buffer(4)]],
+                        const device int* remapTable              [[buffer(5)]],
                                  uint instanceID                  [[instance_id]]) {
     VertexOutput output;
     if(!useDynamicPositions) {
       output.position = cameraUniforms.viewProjection * modelMatrix * float4(input.position, 1.0f);
     } else {
-     output.position = cameraUniforms.viewProjection * modelMatrix * float4(dynamicPositions[vertexID], 1.0f); 
+     output.position = cameraUniforms.viewProjection * modelMatrix * float4(dynamicPositions[remapTable[vertexID]], 1.0f); 
     }
     output.worldPosition = modelMatrix * float4(input.position, 1.0);
     output.normal = input.normal;

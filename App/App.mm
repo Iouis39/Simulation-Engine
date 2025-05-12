@@ -23,12 +23,15 @@ App::App() {
     simd::float3 up = simd::make_float3(0.0, 1.0, 0.0);
     float aspect = WINDOW_WIDTH / WINDOW_HEIGHT;
 
-    camera = std::make_unique<Camera>(pos, dir, up, M_PI / 2, aspect, 0.1, 100);
-    renderer = std::make_unique<Renderer>(m_layer, m_device, m_commandQueue, camera->uniforms(), m_captureManager, m_meshList,
-                                          &m_simulationSettings);
-
     simulation = std::make_unique<Simulation>(m_meshList, &m_simulationSettings);
     simulation->setup();
+
+    camera = std::make_unique<Camera>(pos, dir, up, M_PI / 2, aspect, 0.1, 100);
+    renderer = std::make_unique<Renderer>(m_layer, m_device, m_commandQueue, camera->uniforms(), m_captureManager, m_meshList,
+                                          &m_simulationSettings, simulation.get());
+
+
+    std::cout << simulation->getPointMassCount() << std::endl;
    
     keyboard = std::make_unique<Keyboard>();
     mouse = std::make_unique<Mouse>();   
@@ -116,6 +119,7 @@ void App::buildMeshes() {
 
 void App::run() {
     auto last = SDL_GetTicks();
+    //std::cout << simulation->getPointMassCount() << std::endl;
     
     while(isRunning) {
         auto now = SDL_GetTicks();
@@ -124,7 +128,7 @@ void App::run() {
         last = now;
         
         simulation->update();
-        renderer->updatePositionsBuffer(simulation.get());
+        renderer->updatePositionsBuffer();
         processEvents();
         update(deltaTime);
         renderer->draw();

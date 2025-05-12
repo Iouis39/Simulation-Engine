@@ -1,4 +1,5 @@
 #include "Renderer.h"
+#include "Foundation/NSSharedPtr.hpp"
 #include "Foundation/NSString.hpp"
 #include "Metal/MTLCaptureManager.hpp"
 #include "Metal/MTLResource.hpp"
@@ -8,9 +9,10 @@
 Renderer::Renderer(NS::SharedPtr<CA::MetalLayer> layer, NS::SharedPtr<MTL::Device> device, 
                    NS::SharedPtr<MTL::CommandQueue> commandQueue, Uniforms& uniforms,
                    MTL::CaptureManager* captureManager, std::vector<std::shared_ptr<Mesh>> meshList, 
-                   SimulationSettings* simulationSettings)
+                   SimulationSettings* simulationSettings, Simulation* simulation)
 : layer(layer), device(device), commandQueue(commandQueue), m_cameraUniforms(uniforms), 
-  m_captureManager(captureManager), m_meshList(meshList), m_simulationSettings(simulationSettings) {
+  m_captureManager(captureManager), m_meshList(meshList), m_simulationSettings(simulationSettings),
+  m_simulation(simulation) {
 
     buildShadowMap();
     buildPositionsBuffer();
@@ -18,23 +20,33 @@ Renderer::Renderer(NS::SharedPtr<CA::MetalLayer> layer, NS::SharedPtr<MTL::Devic
     m_renderPasses.push_back(std::make_unique<ShadowPass>(device, m_lightUniforms, m_shadowMap, m_modelTransform));
     m_renderPasses.push_back(std::make_unique<MainPass>(device, m_cameraUniforms, m_lightUniforms, m_shadowMap,
                                                         m_shadowSampler, m_modelTransform, m_dynamicPositions, 
-                                                        m_simulationSettings));
+                                                        m_remapTables, m_simulationSettings));
 }
 
 
 void Renderer::buildPositionsBuffer() {
+    m_remapTables.resize(m_simulation->getPointMassCount());
     // reserve MTL::Buffer, each vertex has one {x, y, z} position...
     m_dynamicPositions.resize(m_meshList.size());
+
     for(size_t i = 0; i < m_meshList.size(); i++) {
+      const size_t remapTableDataSize = m_simulation->getRemapTable(i).size() * sizeof(int);
+      m_remapTables.at(i) = NS::TransferPtr(device->newBuffer(remapTableDataSize, MTL::ResourceStorageModeShared));
+      m_remapTables.at(i)->setLabel(NS::String::string("Table Buffer ", NS::UTF8StringEncoding));
+
       const size_t positionDataSize = m_meshList.at(i)->modelIOMesh.vertexCount * sizeof(simd::float3);
       m_dynamicPositions.at(i) = NS::TransferPtr(device->newBuffer(positionDataSize, MTL::ResourceStorageModeShared));
       m_dynamicPositions.at(i)->setLabel(NS::String::string("Positions Buffer ", NS::UTF8StringEncoding));
     }
 }
 
-void Renderer::updatePositionsBuffer(const Simulation* sim) {
+void Renderer::updatePositionsBuffer() {
   for(size_t i = 0; i < m_meshList.size(); i++) {
-    auto updatedPositions = sim->getPositionList(i);
+
+    auto remapTable = m_simulation->getRemapTable(i);
+    memcpy(m_remapTables.at(i)->contents(), remapTable.data(),  remapTable.size() * sizeof(int));
+
+    auto updatedPositions = m_simulation->getPositionList(i);
     memcpy(m_dynamicPositions.at(i)->contents(), updatedPositions.data(),  updatedPositions.size() * sizeof(simd::float3));
   }
 }

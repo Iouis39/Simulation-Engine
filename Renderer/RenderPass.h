@@ -20,7 +20,7 @@ public:
   MainPass(NS::SharedPtr<MTL::Device> device, Uniforms& cameraUniforms, LightUniforms& lightUniforms,
            NS::SharedPtr<MTL::Texture> shadowMap,  NS::SharedPtr<MTL::SamplerState> shadowSampler,
            simd::float4x4& modelTransform, std::vector<NS::SharedPtr<MTL::Buffer>> dynamicPositions,
-           SimulationSettings* simulationSettings);
+           std::vector<NS::SharedPtr<MTL::Buffer>> remapTables, SimulationSettings* simulationSettings);
   void encode(MTL::CommandBuffer* commandBuffer, MTL::Texture* drawableTexture, std::vector<std::shared_ptr<Mesh>> meshList);
 
   MTL::RenderPipelineState* buildPipeline(const char* vertName, const char* fragName);
@@ -37,6 +37,7 @@ private:
   LightUniforms& m_lightUniforms;
   simd::float4x4& m_modelTransform;
   std::vector<NS::SharedPtr<MTL::Buffer>> m_dynamicPositions;
+  std::vector<NS::SharedPtr<MTL::Buffer>> m_remapTables;
   simd::float4 m_color;
 
   MTL::Texture* m_depthTexture;
